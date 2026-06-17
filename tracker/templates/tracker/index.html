@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Financeiro </title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #3b82f6;
+            --income: #10b981;
+            --expense: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin: 0 0 0.5rem 0;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+
+        .balance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .balance-card h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .balance-amount {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+
+        .positive { color: var(--income); }
+        .negative { color: var(--expense); }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .stat { display: flex; align-items: center; gap: 0.8rem; }
+        .stat-icon {
+            width: 40px; height: 40px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+        }
+        .stat-icon.up { background: rgba(16, 185, 129, 0.1); color: var(--income); }
+        .stat-icon.down { background: rgba(239, 68, 68, 0.1); color: var(--expense); }
+
+        .stat-info span { display: block; font-size: 0.85rem; color: var(--text-muted); }
+        .stat-info strong { font-size: 1.1rem; }
+
+        .chart-container { position: relative; height: 220px; width: 100%; }
+
+        .form-group {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;
+        }
+        .form-full { grid-column: span 2; }
+
+        input, select {
+            width: 100%; background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--glass-border); color: var(--text-main);
+            padding: 0.8rem 1rem; border-radius: 12px; font-size: 1rem; outline: none; transition: all 0.3s;
+        }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+
+        button.btn-submit {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white; border: none; padding: 1rem; border-radius: 12px;
+            font-size: 1.1rem; font-weight: 600; cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s; width: 100%;
+        }
+        button.btn-submit:hover {
+            transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .transactions-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;
+        }
+        .transactions-header h3 { margin: 0; }
+
+        .transaction-item {
+            display: flex; align-items: center; padding: 1.2rem;
+            border-bottom: 1px solid var(--glass-border); transition: background 0.3s;
+        }
+        .transaction-item:hover { background: rgba(255, 255, 255, 0.03); }
+        .transaction-item:last-child { border-bottom: none; }
+
+        .t-cat-icon {
+            width: 48px; height: 48px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-right: 1rem;
+        }
+        .t-info { flex: 1; }
+        .t-desc { font-weight: 600; font-size: 1.1rem; display: block; }
+        .t-cat { font-size: 0.85rem; color: var(--text-muted); }
+        .t-right { text-align: right; }
+        .t-amount { font-weight: 700; font-size: 1.1rem; display: block; }
+        .t-date { font-size: 0.8rem; color: var(--text-muted); }
+
+        .btn-delete {
+            background: none; border: none; color: var(--text-muted);
+            cursor: pointer; padding: 0.5rem; margin-left: 1rem; transition: color 0.3s;
+        }
+        .btn-delete:hover { color: var(--expense); }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed; top: 20px; right: 20px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .toast {
+            background: var(--glass-bg); backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border); border-radius: 12px;
+            padding: 1rem 1.5rem; color: white; display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3); animation: slideInRight 0.4s ease-out forwards, fadeOut 0.5s ease-out 4s forwards;
+        }
+        .toast.success { border-left: 4px solid var(--income); }
+        .toast.error { border-left: 4px solid var(--expense); }
+        .toast.warning { border-left: 4px solid #f59e0b; }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Toasts System -->
+{% if messages %}
+<div class="toast-container">
+    {% for message in messages %}
+    <div class="toast {{ message.tags }}">
+        {% if message.tags == 'success' %}<i class="fas fa-check-circle" style="color: var(--income);"></i>
+        {% elif message.tags == 'error' %}<i class="fas fa-exclamation-circle" style="color: var(--expense);"></i>
+        {% elif message.tags == 'warning' %}<i class="fas fa-trash" style="color: #f59e0b;"></i>
+        {% endif %}
+        <span>{{ message }}</span>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container">
+    <header>
+        <h1>Controle Financeiro</h1>
+        <p style="color: var(--text-muted);">Assuma o controle da sua vida financeira com POO</p>
+    </header>
+
+    <div class="grid-layout">
+        <!-- Balance Card -->
+        <div class="card balance-card">
+            <div class="balance-header">
+                <h2>Saldo Total</h2>
+                <i class="fas fa-wallet" style="color: var(--text-muted); font-size: 1.5rem;"></i>
+            </div>
+            <div class="balance-amount {% if account.balance >= 0 %}positive{% else %}negative{% endif %}">
+                R$ {{ account.balance|floatformat:2 }}
+            </div>
+            
+            <div class="stats-row">
+                <div class="stat">
+                    <div class="stat-icon up"><i class="fas fa-arrow-up"></i></div>
+                    <div class="stat-info">
+                        <span>Receitas</span>
+                        <strong class="positive">R$ {{ account.total_income|floatformat:2 }}</strong>
+                    </div>
+                </div>
+                <div class="stat">
+                    <div class="stat-icon down"><i class="fas fa-arrow-down"></i></div>
+                    <div class="stat-info">
+                        <span>Despesas</span>
+                        <strong class="negative">R$ {{ account.total_expense|floatformat:2 }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Card -->
+        <div class="card">
+            <h3 style="margin-top: 0; color: var(--text-muted); font-weight: 500;">Despesas por Categoria</h3>
+            <div class="chart-container">
+                <canvas id="expenseChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-layout">
+        <!-- Form -->
+        <div class="card">
+            <h3 style="margin-top: 0; color: var(--text-muted); font-weight: 500;">Nova Transação</h3>
+            <form action="{% url 'add_transaction' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group form-full">
+                    <select name="type" id="t_type" required onchange="updateCategories()">
+                        <option value="expense">Despesa (-)</option>
+                        <option value="income">Receita (+)</option>
+                    </select>
+                </div>
+                <div class="form-group form-full">
+                    <select name="category" id="t_category" required>
+                        <!-- Populated via JS -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="description" placeholder="Descrição" required>
+                    <input type="text" id="amount_input" name="amount" placeholder="Valor (R$)" required oninput="formatCurrency(this)">
+                </div>
+                <button type="submit" class="btn-submit"><i class="fas fa-plus"></i> Adicionar</button>
+            </form>
+        </div>
+
+        <!-- Transactions List -->
+        <div class="card" style="max-height: 450px; overflow-y: auto;">
+            <div class="transactions-header">
+                <h3 style="color: var(--text-muted); font-weight: 500;">Transações Recentes</h3>
+            </div>
+            
+            {% if transactions %}
+                {% for t in transactions %}
+                <div class="transaction-item">
+                    <div class="t-cat-icon js-cat-icon" data-color="{{ t.category.color|default:'#94a3b8' }}">
+                        <i class="{{ t.category.icon|default:'fas fa-box' }}"></i>
+                    </div>
+                    <div class="t-info">
+                        <span class="t-desc">{{ t.description }}</span>
+                        <span class="t-cat">{{ t.category.name|default:"Outros" }}</span>
+                    </div>
+                    <div class="t-right">
+                        {% if t.class_name == 'Income' %}
+                            <span class="t-amount positive">+ R$ {{ t.formatted_amount|floatformat:2 }}</span>
+                        {% else %}
+                            <span class="t-amount negative">- R$ {{ t.formatted_amount|floatformat:2 }}</span>
+                        {% endif %}
+                        <span class="t-date">{{ t.date|date:"d/m/Y" }}</span>
+                    </div>
+                    <a href="{% url 'delete_transaction' t.id %}" class="btn-delete" title="Excluir"><i class="fas fa-trash"></i></a>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    <i class="fas fa-receipt" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <p>Nenhuma transação registrada.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Injecting JSON cleanly into HTML using django tags -->
+{{ income_categories_json|json_script:"income_data" }}
+{{ expense_categories_json|json_script:"expense_data" }}
+{{ expenses_data|json_script:"chart_data" }}
+
+<script>
+    // Load JSON data safely without triggering IDE warnings
+    const incomeCategories = JSON.parse(document.getElementById('income_data').textContent);
+    const expenseCategories = JSON.parse(document.getElementById('expense_data').textContent);
+
+    function updateCategories() {
+        const typeSelect = document.getElementById('t_type');
+        const catSelect = document.getElementById('t_category');
+        catSelect.innerHTML = '';
+        
+        const categories = typeSelect.value === 'income' ? incomeCategories : expenseCategories;
+        
+        categories.forEach(c => {
+            const option = document.createElement('option');
+            option.value = c.id;
+            option.textContent = c.name;
+            catSelect.appendChild(option);
+        });
+    }
+
+    // Initialize categories on load
+    updateCategories();
+
+    // Chart.js Setup
+    const expensesDataStr = document.getElementById('chart_data').textContent;
+    const expensesData = JSON.parse(expensesDataStr);
+    
+    if (Object.keys(expensesData).length > 0) {
+        const labels = Object.keys(expensesData);
+        const data = labels.map(l => expensesData[l].amount);
+        const colors = labels.map(l => expensesData[l].color);
+
+        const ctx = document.getElementById('expenseChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors,
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { color: '#f8fafc', font: { family: 'Inter' } }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+    } else {
+        const ctx = document.getElementById('expenseChart').parentNode;
+        ctx.innerHTML = '<div style="height: 100%; display:flex; align-items:center; justify-content:center; color: #94a3b8;"><p>Nenhuma despesa para exibir.</p></div>';
+    }
+    
+    // Auto-remove toasts after 4.5 seconds
+    setTimeout(() => {
+        const toasts = document.querySelectorAll('.toast');
+        toasts.forEach(t => t.remove());
+    }, 4500);
+
+    // Currency mask function
+    function formatCurrency(input) {
+        let value = input.value.replace(/\D/g, ''); // Remove non-digits
+        if (value === '') {
+            input.value = '';
+            return;
+        }
+        value = (parseInt(value, 10) / 100).toFixed(2);
+        value = value.replace('.', ',');
+        value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+        input.value = 'R$ ' + value;
+    }
+
+    // Apply dynamic colors without triggering IDE CSS linters
+    document.querySelectorAll('.js-cat-icon').forEach(icon => {
+        const color = icon.getAttribute('data-color');
+        if (color) {
+            icon.style.backgroundColor = color + '20'; // 20 adds 12% opacity in hex
+            icon.style.color = color;
+        }
+    });
+</script>
+
+</body>
+</html>
