@@ -1,4 +1,4 @@
-# 💰 Finance Tracker Pro
+# 💰 Gerenciador Financeiro Pessoal
 
 Um sistema de controle de gastos pessoais super moderno, rápido e inteligente, construído em **Python (Django)**. Essa aplicação foi desenhada para facilitar a sua vida financeira, utilizando uma interface linda com *Dark Mode*, *Glassmorphism* e aplicando perfeitamente os melhores conceitos de **Programação Orientada a Objetos (POO)** no backend.
 
