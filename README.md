@@ -14,9 +14,7 @@ Um sistema de controle de gastos pessoais super moderno, rápido e inteligente, 
 
 ---
 
-## 🧩 Onde a POO foi Aplicada? (Explicação para a Atividade)
-
-O projeto cumpre todos os requisitos exigidos com sobras, graças ao uso do Django ORM:
+## 🧩 Onde a POO foi Aplicada?
 
 1. **Classes e Herança:** O modelo `Transaction` serve de classe Pai para `Income` (Receita) e `Expense` (Despesa), que herdam os atributos e a lógica de banco de dados nativamente.
 2. **Encapsulamento (Properties):** Utilização do decorador `@property` na classe `Account` para calcular o Saldo, o Total de Receitas e o Total de Despesas. Isso garante que esses totais não sejam manipulados fora das regras de negócio.
@@ -39,7 +37,7 @@ pip install django
 ```
 
 ### 3. Inicie o Servidor Local
-Ainda no terminal, na raiz da pasta `PROVAB2ROMES`, inicie o sistema rodando:
+Ainda no terminal, na raiz da pasta, inicie o sistema rodando:
 ```bash
 python manage.py runserver
 ```
@@ -48,4 +46,4 @@ python manage.py runserver
 Abra o seu navegador de preferência e digite o endereço abaixo:
 👉 **http://127.0.0.1:8000/**
 
-Divirta-se organizando suas finanças! 🎉
+Divirta-se organizando suas finanças!
