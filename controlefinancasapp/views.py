@@ -26,7 +26,7 @@ def index(request):
     transactions = account.get_all_transactions()
     expenses_data = account.get_expenses_by_category()
     
-    # Serializing to JSON to avoid IDE syntax warnings in the template
+    # Preparando dados das categorias para envio à view
     income_cats = list(Category.objects.filter(is_income=True).values('id', 'name'))
     expense_cats = list(Category.objects.filter(is_income=False).values('id', 'name'))
     
@@ -37,7 +37,7 @@ def index(request):
         'expense_categories_json': expense_cats,
         'expenses_data': expenses_data,
     }
-    return render(request, 'tracker/index.html', context)
+    return render(request, 'controlefinancasapp/index.html', context)
 
 class TransactionValidationError(Exception):
     """Exceção customizada para erros de validação nas transações."""
@@ -82,10 +82,10 @@ def add_transaction(request):
             # 4. Inserção baseada no Tipo
             if t_type == 'income':
                 Income.objects.create(description=description, amount=amount, category=category)
-                messages.success(request, 'Receita adicionada com sucesso! 💰')
+                messages.success(request, 'Receita adicionada com sucesso!')
             elif t_type == 'expense':
                 Expense.objects.create(description=description, amount=amount, category=category)
-                messages.success(request, 'Despesa registrada com sucesso! 📉')
+                messages.success(request, 'Despesa registrada com sucesso!')
             else:
                 raise TransactionValidationError("Tipo de transação inválido.")
                 
@@ -105,7 +105,7 @@ def delete_transaction(request, tx_id):
         tx = Transaction.objects.get(id=tx_id)
         tx_description = tx.description
         tx.delete()
-        messages.warning(request, f'Transação "{tx_description}" removida com sucesso. 🗑️')
+        messages.warning(request, f'Transação "{tx_description}" removida com sucesso.')
     except Transaction.DoesNotExist:
         messages.error(request, 'Erro: A transação que você tentou deletar não foi encontrada.')
     except Exception as e:

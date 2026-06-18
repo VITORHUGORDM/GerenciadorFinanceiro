@@ -30,21 +30,21 @@ class Migration(migrations.Migration):
                 ('description', models.CharField(max_length=255)),
                 ('amount', models.DecimalField(decimal_places=2, max_digits=10)),
                 ('date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='tracker.category')),
+                ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='controlefinancasapp.category')),
             ],
         ),
         migrations.CreateModel(
             name='Expense',
             fields=[
-                ('transaction_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tracker.transaction')),
+                ('transaction_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='controlefinancasapp.transaction')),
             ],
-            bases=('tracker.transaction',),
+            bases=('controlefinancasapp.transaction',),
         ),
         migrations.CreateModel(
             name='Income',
             fields=[
-                ('transaction_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tracker.transaction')),
+                ('transaction_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='controlefinancasapp.transaction')),
             ],
-            bases=('tracker.transaction',),
+            bases=('controlefinancasapp.transaction',),
         ),
     ]
