@@ -44,7 +44,9 @@ pip install django
 ### 3. Iniciar o Servidor
 
 Na raiz da pasta, execute o comando:
+
 ```bash
+python manage.py migrate
 python manage.py runserver
 ```
 
