@@ -1,4 +1,4 @@
-# 💰 Gerenciador Financeiro Pessoal
+#  Gerenciador Financeiro Pessoal
 
 Um sistema de controle de gastos pessoais construído em Python (Django). O objetivo desta aplicação é facilitar a organização financeira, implementando conceitos de Programação Orientada a Objetos (POO) no backend.
 
@@ -14,7 +14,7 @@ Um sistema de controle de gastos pessoais construído em Python (Django). O obje
 
 ---
 
-## 🧩 Onde a POO foi Aplicada?
+##  Onde a POO foi Aplicada?
 
 O projeto atende aos requisitos utilizando o Django ORM:
 
