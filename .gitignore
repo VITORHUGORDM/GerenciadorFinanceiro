@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Banco local do Django (gerado por "python manage.py migrate")
+db.sqlite3
+
+# Ambiente e editor
+.env
+.vscode/
+.idea/
